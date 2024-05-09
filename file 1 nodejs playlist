@@ -1,0 +1,37 @@
+const http = require('http');
+const os = require('os');
+
+const PORT = process.env.PORT || 3000;
+
+const server = http.createServer((req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'GET' && req.url === '/system-info') {
+    // Return information about CPU and OS
+    const userInfo = {
+      cpuArchitecture: os.arch(),
+      cpuCores: os.cpus().length,
+      totalMemory: os.totalmem(),
+      freeMemory: os.freemem(),
+      platform: os.platform(),
+      type: os.type(),
+    };
+
+    // Simulating asynchronous operation with random delay
+    setTimeout(() => {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(userInfo));
+    }, Math.random() * 3000); // Random delay up to 3 seconds
+  } else {
+    // Handle invalid routes
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Invalid route');
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
